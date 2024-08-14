@@ -1,9 +1,9 @@
 import pandas as pd
 import altair as alt
-import os
+import os, re
 import numpy as np
 import streamlit as st
-from datetime import datetime
+from datetime import date
 from urllib.error import URLError
 
 #get file names from data/
@@ -25,31 +25,35 @@ stock = st.selectbox(
     (filenames),
 )
 
-# st.write("You selected:", stock)
-stock = "QQQ"
-
-def get_data(stock):
+def get_date(stock):
     csv_loc = f'./data/{stock}.csv'
     df = pd.read_csv(csv_loc, sep=',', header=0)
     df['Date'] = pd.to_datetime(df['Date'])
     min_date = df['Date'].min().date()
     max_date = df['Date'].max().date()
-    return df.set_index("Date"), min_date, max_date
+    return min_date, max_date
 
-df, min_date, max_date = get_data(stock)
-
-print(min_date.year, min_date.month, min_date.day)
-print(max_date.year, max_date.month, max_date.day)
+min_date, max_date = get_date(stock)
 #select data range to display on chart/ perform operations with selected range.. default always 0% 100%
-start_time = st.slider(
+date_range = st.slider(
     "Select date range: ",
     value=(
-            datetime(min_date.year, min_date.month, min_date.day), 
-            datetime(max_date.year, max_date.month, max_date.day)
+            date(min_date.year, min_date.month, min_date.day), 
+            date(max_date.year, max_date.month, max_date.day)
            ),
     format="YYYY/MM/DD",
 )
-st.write("Start time:", start_time)
+st.write("Date Range:",  (', '.join(str(dt) for dt in date_range)))
 
 #table with usefull information, avg annual rate, std deviation.. check porfolio analyser
+
+def stock_data():
+    csv_loc = f'./data/{stock}.csv'
+    df = pd.read_csv(csv_loc, sep=',', header=0)
+    return df.set_index("Date")
+
+csv_loc = './data/QQQ.csv'
+chart_data = pd.read_csv(csv_loc, sep=',')
+
+st.line_chart(chart_data, x="Date", y="Close")
 
