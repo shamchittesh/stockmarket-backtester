@@ -44,6 +44,8 @@ date_range = st.slider(
     format="YYYY/MM/DD",
 )
 st.write("Date Range:",  (', '.join(str(dt) for dt in date_range)))
+st.write("Date Range:",  (date_range[0]))
+st.write("Date Range:",  (date_range[1]))
 
 #table with usefull information, avg annual rate, std deviation.. check porfolio analyser
 
@@ -53,7 +55,25 @@ def stock_data():
     return df.set_index("Date")
 
 csv_loc = './data/QQQ.csv'
-chart_data = pd.read_csv(csv_loc, sep=',')
 
-st.line_chart(chart_data, x="Date", y="Close")
+# Specify the date range
+start_date = f'{date_range[0]}'
+end_date = f'{date_range[1]}'
+
+# Function to filter rows based on date range
+def filter_date_range(df, start_date, end_date):
+    return df[(df.index >= start_date) & (df.index <= end_date)]
+
+# Read the CSV file and parse dates
+df = pd.read_csv(
+    csv_loc,
+    sep=',',
+    parse_dates=['Date'],  # Replace 'Date' with the name of your date column
+    header=0,
+    skiprows=0
+)
+print(df)
+df_filtered = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+print(df_filtered)
+st.line_chart(df_filtered, x="Date", y="Close")
 
