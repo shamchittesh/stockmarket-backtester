@@ -62,6 +62,13 @@ with col1:
     def filter_date_range(df, start_date, end_date):
         return df[(df.index >= start_date) & (df.index <= end_date)]
 
+    #####################################
+    # Optimised Stop Loss
+    #####################################
+    def OSL(df, start_date, end_date):
+        csv_loc = f'./data/{stock}.csv'
+
+
     # Read the CSV file and parse dates
     df = pd.read_csv(
         csv_loc,
@@ -73,7 +80,7 @@ with col1:
     df_filtered = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
     st.line_chart(df_filtered, x="Date", y="Close")
     
-    table_column = ["volatility (pips)","return","annualize average return"]
+    table_column = ["ATR","return","annualize average return"]
     df = pd.DataFrame(
     np.random.randn(1, len(table_column)), columns=table_column
     )
@@ -83,17 +90,30 @@ with col1:
 # RANDOM TRADE
 #####################################
 with col2:
-    st.markdown("# Trading simulator")
+    st.markdown("# Probability calculator")
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        amount = st.number_input("\$$$")
+        amount = st.number_input("Starting \$$$")
     with col2:
         stop_loss = st.number_input("S/L pips")
     with col3:
         stop_loss = st.number_input("T/P pips")
 
-    if st.button("Enter Random Trade", type="primary"):
-        st.write("Why hello there")
+    if st.button("Enter trading sequence", type="primary"):
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            "Total Trades"
+        with col2:
+            "Winning Trades"
+        with col3:
+            "Loosing Trades"
+        with col4:
+            "Max trade time (Days)"
+        with col5:
+            "Min trade time (Days)"
+
     else:
         st.write("Goodbye")
+
+
