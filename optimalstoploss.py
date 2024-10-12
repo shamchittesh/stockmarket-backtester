@@ -53,30 +53,59 @@ print(f"Smallest value of D: {smallest_D}")
 print(f"Highest value of D: {highest_D}")
 
 finding_nemo = []
+i = 1
+lowest_sl = 0
+highest_sl = highest_D
 
-for X in np.arange(2.6, 3.2, 0.01):
-    # Calculate the new column 'tx' based on the value of X
-    count = 0
-    new_df['tx'] = new_df.apply(lambda row: row['P'] if X > row['D'] else -X, axis=1)    # Calculate the new column 'tx' based on the value of X
-    # Count the number of times X < row['D']
-    for _, row in new_df.iterrows():
-        if X < row['D']:
-            count += 1
-    new_df['balance_tx'] = new_df['tx'].cumsum()
-    last_balance_tx = new_df['balance_tx'].iloc[-1]
-    finding_nemo.append({'X': X, 'sum_balance_tx': last_balance_tx, 'SL_hits': count})
+while i >= 0.0001:
+    print(f"\nCurrent value of i: {i:.4f}")
+    for X in np.arange(lowest_sl, highest_sl, i):
+        # Calculate the new column 'tx' based on the value of X
+        new_df['tx'] = new_df.apply(lambda row: row['P'] if X > row['D'] else -X, axis=1)    # Calculate the new column 'tx' based on the value of X
+        new_df['balance_tx'] = new_df['tx'].cumsum()
+        last_balance_tx = new_df['balance_tx'].iloc[-1]
+        finding_nemo.append({'X': X, 'sum_balance_tx': last_balance_tx})
 
-print(new_df)
-finding_nemo = pd.DataFrame(finding_nemo)
+    finding_nemo = pd.DataFrame(finding_nemo)
 
-# Finding the highest value of last_balance_tx and its corresponding X
-max_index = finding_nemo['sum_balance_tx'].idxmax()  # Index of the max balance_tx
-max_value = finding_nemo['sum_balance_tx'].max()     # Maximum balance_tx value
-corresponding_X = finding_nemo.loc[max_index, 'X']    # Corresponding X value
-SL_hits = finding_nemo.loc[max_index, 'SL_hits']  # Corresponding Count X < D
+    # Finding the highest value of last_balance_tx and its corresponding X
+    max_index = finding_nemo['sum_balance_tx'].idxmax()  # Index of the max balance_tx
+    max_value = finding_nemo['sum_balance_tx'].max()     # Maximum balance_tx value
+    corresponding_X = finding_nemo.loc[max_index, 'X']    # Corresponding X value
 
-# Print the result
-print(f"\nHighest Sum balance_tx: {max_value:.4f} at X = {corresponding_X:.4f} with SL Hits = {SL_hits}")
+    print(f"Highest Sum balance_tx: {max_value:.4f} at X = {corresponding_X:.4f}")
+
+    lowest_sl = corresponding_X - i
+    highest_sl = corresponding_X + i
+
+    print(f"lowest sl: {lowest_sl:.4f} highest_sl: {highest_sl:.4f}")
+    finding_nemo = []
+
+    i /= 10
+
+# for X in np.arange(0, highest_D, 1):
+#     # Calculate the new column 'tx' based on the value of X
+#     count = 0
+#     new_df['tx'] = new_df.apply(lambda row: row['P'] if X > row['D'] else -X, axis=1)    # Calculate the new column 'tx' based on the value of X
+#     # Count the number of times X < row['D']
+#     for _, row in new_df.iterrows():
+#         if X < row['D']:
+#             count += 1
+#     new_df['balance_tx'] = new_df['tx'].cumsum()
+#     last_balance_tx = new_df['balance_tx'].iloc[-1]
+#     finding_nemo.append({'X': X, 'sum_balance_tx': last_balance_tx, 'SL_hits': count})
+
+# print(new_df)
+# finding_nemo = pd.DataFrame(finding_nemo)
+
+# # Finding the highest value of last_balance_tx and its corresponding X
+# max_index = finding_nemo['sum_balance_tx'].idxmax()  # Index of the max balance_tx
+# max_value = finding_nemo['sum_balance_tx'].max()     # Maximum balance_tx value
+# corresponding_X = finding_nemo.loc[max_index, 'X']    # Corresponding X value
+# SL_hits = finding_nemo.loc[max_index, 'SL_hits']  # Corresponding Count X < D
+
+# # Print the result
+# print(f"\nHighest Sum balance_tx: {max_value:.4f} at X = {corresponding_X:.4f} with SL Hits = {SL_hits}")
 
 
-print(finding_nemo)
+# print(finding_nemo)
